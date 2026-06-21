@@ -1,0 +1,125 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--mw-border);
+  background: rgba(11, 17, 32, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.logoMark {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: radial-gradient(
+      circle at 30% 25%,
+      rgba(34, 211, 238, 0.9),
+      rgba(99, 102, 241, 0.95)
+    ),
+    linear-gradient(135deg, #6366f1, #22d3ee);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
+}
+
+.brandName {
+  display: block;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.brandTag {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--mw-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 34vw;
+}
+
+.nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navLink,
+.navLinkActive {
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--mw-muted);
+  border: 1px solid transparent;
+}
+
+.navLink:hover {
+  color: var(--mw-text);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.navLinkActive {
+  color: var(--mw-text);
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid var(--mw-border);
+  background: rgba(17, 24, 39, 0.65);
+  color: var(--mw-text);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .inner {
+    flex-wrap: wrap;
+  }
+  .nav {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+  .actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .brandTag {
+    display: none;
+  }
+  .gh span {
+    display: none;
+  }
+}

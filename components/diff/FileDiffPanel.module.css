@@ -1,0 +1,106 @@
+.wrap {
+  margin-top: 0.75rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  overflow: hidden;
+  background: rgba(2, 6, 23, 0.35);
+}
+
+.fs {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(2, 6, 23, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.fsBar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loading {
+  padding: 1rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.toolbar {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.arrow {
+  color: #818cf8;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.btn {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(17, 24, 39, 0.75);
+  color: #e5e7eb;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.82rem;
+}
+
+.diffShell {
+  overflow: auto;
+  max-height: min(560px, 62vh);
+}
+
+.fs .diffShell {
+  max-height: none;
+  flex: 1;
+}
+
+/* react-diff-viewer table can overflow */
+.diffShell :global(table) {
+  font-size: 12px;
+}
+
+.syntaxGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+@media (max-width: 900px) {
+  .syntaxGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.syntaxTitle {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-bottom: 0.35rem;
+}
+
+.syntaxGrid pre {
+  border-radius: 12px !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+}

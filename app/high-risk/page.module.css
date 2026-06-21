@@ -1,0 +1,49 @@
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.sub {
+  margin-top: 0.45rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 70ch;
+}
+
+.cta,
+.ctaGhost {
+  border-radius: 14px;
+  padding: 0.55rem 0.9rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.cta {
+  display: inline-flex;
+  margin-top: 1rem;
+  border: 1px solid rgba(129, 140, 248, 0.45);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(34, 211, 238, 0.75));
+  color: #0b1120;
+}
+
+.ctaGhost {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(17, 24, 39, 0.65);
+  color: #e5e7eb;
+}

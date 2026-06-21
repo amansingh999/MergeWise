@@ -1,0 +1,39 @@
+.card {
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(
+    160deg,
+    rgba(17, 24, 39, 0.92),
+    rgba(11, 17, 32, 0.55)
+  );
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.head {
+  padding: 1rem 1rem 0.25rem;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.chart {
+  height: 260px;
+  padding: 0.25rem 0.5rem 0.75rem;
+}
+
+@media (max-width: 520px) {
+  .chart {
+    height: 220px;
+  }
+}
