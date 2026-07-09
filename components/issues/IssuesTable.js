@@ -1,10 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaChevronDown } from "react-icons/fa";
 import { pickStr, pickNum } from "../../utils/pick";
 import { exportCsv } from "../../utils/exportReport";
 import styles from "./IssuesTable.module.css";
+
+function issueId(i) {
+  return pickStr(i, ["id"], "");
+}
 
 function issueSeverity(i) {
   return pickStr(i, ["severity", "level", "riskLevel"], "—");
@@ -14,8 +19,12 @@ function issueCategory(i) {
   return pickStr(i, ["category", "type", "kind"], "—");
 }
 
-function issueMessage(i) {
-  return pickStr(i, ["message", "description", "text", "detail"], "—");
+function issueTitle(i) {
+  return pickStr(i, ["title", "message", "text"], "—");
+}
+
+function issueDescription(i) {
+  return pickStr(i, ["description", "detail"], "");
 }
 
 function issueFile(i) {
@@ -23,24 +32,117 @@ function issueFile(i) {
 }
 
 function issueLine(i) {
-  return pickNum(i, ["line", "lineNumber", "startLine"], 0);
+  const n = pickNum(i, ["line", "lineNumber", "startLine"], 0);
+  return n > 0 ? n : null;
 }
 
-function issueSuggestion(i) {
-  return pickStr(i, ["suggestion", "suggestedFix", "fix", "recommendation"], "—");
+function issueFix(i) {
+  return pickStr(i, [
+    "fixRecommendation",
+    "suggestion",
+    "suggestedFix",
+    "fix",
+    "recommendation",
+  ], "—");
+}
+
+function issueProductionImpact(i) {
+  return pickStr(i, ["productionImpact", "impact"], "");
+}
+
+function issueFixedExample(i) {
+  return pickStr(i, ["fixedCodeExample", "fixedExample", "exampleFix"], "");
 }
 
 function issueConfidence(i) {
-  const v = pickStr(i, ["confidence", "score", "probability"], "");
-  return v || "—";
+  const n = pickNum(i, ["confidenceScore", "confidence"], NaN);
+  if (Number.isFinite(n)) return `${n}%`;
+  const s = pickStr(i, ["score", "probability"], "");
+  return s || "—";
 }
 
-function issueRule(i) {
-  return pickStr(i, ["rule", "ruleId", "code"], "—");
+function severityClass(sev) {
+  const s = sev.toLowerCase();
+  if (s.includes("crit")) return styles.sevCritical;
+  if (s.includes("high")) return styles.sevHigh;
+  if (s.includes("med")) return styles.sevMedium;
+  if (s.includes("low")) return styles.sevLow;
+  return styles.sevInfo;
 }
 
-function issueStatus(i) {
-  return pickStr(i, ["status", "state"], "—");
+function IssueCard({ issue, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const sev = issueSeverity(issue);
+  const title = issueTitle(issue);
+  const description = issueDescription(issue);
+  const fix = issueFix(issue);
+  const impact = issueProductionImpact(issue);
+  const example = issueFixedExample(issue);
+
+  return (
+    <article className={styles.card}>
+      <button
+        type="button"
+        className={styles.cardHead}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        <div className={styles.cardMain}>
+          <span className={`${styles.sev} ${severityClass(sev)}`}>{sev}</span>
+          <span className={styles.cat}>{issueCategory(issue)}</span>
+          <h3 className={styles.cardTitle}>{title}</h3>
+          <div className={styles.cardMeta}>
+            <span className={styles.file} title={issueFile(issue)}>
+              {issueFile(issue)}
+            </span>
+            {issueLine(issue) ? <span>Line {issueLine(issue)}</span> : null}
+            <span>Confidence {issueConfidence(issue)}</span>
+          </div>
+        </div>
+        <FaChevronDown className={open ? styles.chevOpen : styles.chev} aria-hidden />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            key="body"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className={styles.cardBody}
+          >
+            {description && description !== title ? (
+              <div className={styles.field}>
+                <span className={styles.fieldK}>Description</span>
+                <p className={styles.fieldV}>{description}</p>
+              </div>
+            ) : null}
+            {impact ? (
+              <div className={styles.field}>
+                <span className={styles.fieldK}>Production impact</span>
+                <p className={styles.fieldV}>{impact}</p>
+              </div>
+            ) : null}
+            {fix && fix !== "—" ? (
+              <div className={styles.field}>
+                <span className={styles.fieldK}>Fix recommendation</span>
+                <p className={styles.fieldV}>{fix}</p>
+              </div>
+            ) : null}
+            {example ? (
+              <div className={styles.field}>
+                <span className={styles.fieldK}>Fixed code example</span>
+                <pre className={styles.codeEx}>{example}</pre>
+              </div>
+            ) : null}
+            {issueId(issue) ? (
+              <div className={styles.fieldId}>ID: {issueId(issue)}</div>
+            ) : null}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </article>
+  );
 }
 
 export default function IssuesTable({ issues }) {
@@ -83,11 +185,12 @@ export default function IssuesTable({ issues }) {
       const hay = [
         issueSeverity(i),
         issueCategory(i),
-        issueMessage(i),
+        issueTitle(i),
+        issueDescription(i),
         issueFile(i),
-        issueSuggestion(i),
-        issueRule(i),
-        issueStatus(i),
+        issueFix(i),
+        issueProductionImpact(i),
+        issueId(i),
       ]
         .join(" ")
         .toLowerCase();
@@ -107,8 +210,8 @@ export default function IssuesTable({ issues }) {
       if (sortKey === "severity")
         return rankSev(issueSeverity(a)) - rankSev(issueSeverity(b));
       if (sortKey === "file") return issueFile(a).localeCompare(issueFile(b));
-      if (sortKey === "line") return issueLine(a) - issueLine(b);
-      return issueMessage(a).localeCompare(issueMessage(b));
+      if (sortKey === "line") return (issueLine(a) || 0) - (issueLine(b) || 0);
+      return issueTitle(a).localeCompare(issueTitle(b));
     });
 
     return out;
@@ -119,15 +222,17 @@ export default function IssuesTable({ issues }) {
 
   function exportRows() {
     const data = filtered.map((i) => ({
+      id: issueId(i),
       severity: issueSeverity(i),
       category: issueCategory(i),
-      message: issueMessage(i),
+      title: issueTitle(i),
+      description: issueDescription(i),
       file: issueFile(i),
       line: issueLine(i) || "",
-      suggestion: issueSuggestion(i),
-      confidence: issueConfidence(i),
-      rule: issueRule(i),
-      status: issueStatus(i),
+      fixRecommendation: issueFix(i),
+      productionImpact: issueProductionImpact(i),
+      fixedCodeExample: issueFixedExample(i),
+      confidenceScore: issueConfidence(i),
     }));
     exportCsv(`mergewise-issues-${Date.now()}.csv`, data);
   }
@@ -137,10 +242,11 @@ export default function IssuesTable({ issues }) {
       <div className={styles.head}>
         <div>
           <h2 id="issues-title" className={styles.title}>
-            Issue analysis
+            Review issues
           </h2>
           <p className={styles.sub}>
-            Table view with filters, sorting, pagination, and CSV export.
+            {rows.length} issues from the API — expand each card for full details including
+            production impact and fix recommendations.
           </p>
         </div>
         <button type="button" className={styles.export} onClick={exportRows}>
@@ -158,7 +264,7 @@ export default function IssuesTable({ issues }) {
               setPage(1);
               setQ(e.target.value);
             }}
-            placeholder="Search message, rule, file…"
+            placeholder="Search title, file, category…"
             aria-label="Search issues"
           />
         </label>
@@ -228,57 +334,23 @@ export default function IssuesTable({ issues }) {
             <option value="severity">Severity</option>
             <option value="file">File</option>
             <option value="line">Line</option>
-            <option value="message">Message</option>
+            <option value="message">Title</option>
           </select>
         </label>
       </div>
 
-      <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th scope="col">Severity</th>
-              <th scope="col">Category</th>
-              <th scope="col">Message</th>
-              <th scope="col">File</th>
-              <th scope="col">Line</th>
-              <th scope="col">Suggestion</th>
-              <th scope="col">Confidence</th>
-              <th scope="col">Rule</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageRows.length ? (
-              pageRows.map((i, idx) => (
-                <motion.tr
-                  key={idx}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(0.12, idx * 0.015) }}
-                >
-                  <td>
-                    <span className={styles.sev}>{issueSeverity(i)}</span>
-                  </td>
-                  <td>{issueCategory(i)}</td>
-                  <td className={styles.msg}>{issueMessage(i)}</td>
-                  <td className={styles.file}>{issueFile(i)}</td>
-                  <td>{issueLine(i) || "—"}</td>
-                  <td className={styles.msg}>{issueSuggestion(i)}</td>
-                  <td>{issueConfidence(i)}</td>
-                  <td>{issueRule(i)}</td>
-                  <td>{issueStatus(i)}</td>
-                </motion.tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={9} className={styles.empty}>
-                  No issues match the current filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className={styles.cards}>
+        {pageRows.length ? (
+          pageRows.map((issue, idx) => (
+            <IssueCard
+              key={issueId(issue) || `${issueFile(issue)}-${idx}`}
+              issue={issue}
+              defaultOpen={idx === 0 && page === 1}
+            />
+          ))
+        ) : (
+          <p className={styles.empty}>No issues match the current filters.</p>
+        )}
       </div>
 
       <div className={styles.pager}>

@@ -1,3 +1,4 @@
+import { aggregateFileStats, pickLineCount } from "./fileChange";
 import { asArray, pick, pickNum, pickStr } from "./pick";
 
 function unwrapPayload(res) {
@@ -13,6 +14,7 @@ function unwrapPayload(res) {
 
 function collectIssues(root) {
   const candidates = [
+    root.reviewIssues,
     root.issues,
     root.findings,
     root.problems,
@@ -110,8 +112,8 @@ function issuesPerFile(files, issues) {
   const map = {};
   for (const f of files) {
     const name = pickStr(f, [
-      "fileName",
       "filename",
+      "fileName",
       "path",
       "filePath",
       "name",
@@ -214,9 +216,9 @@ function heatMapCells(files, issues) {
 
 function stackedLines(files) {
   return files.map((f) => ({
-    name: pickStr(f, ["fileName", "path", "name"], "file").slice(0, 32),
-    added: pickNum(f, ["addedLines", "additions", "linesAdded"]),
-    deleted: pickNum(f, ["deletedLines", "deletions", "linesDeleted"]),
+    name: pickStr(f, ["filename", "fileName", "path", "name"], "file").slice(0, 32),
+    added: pickLineCount(f, ["additions", "linesAdded"], ["addedLines"]),
+    deleted: pickLineCount(f, ["deletions", "linesDeleted"], ["removedLines", "deletedLines"]),
   }));
 }
 
@@ -374,6 +376,24 @@ export function normalizeReviewResponse(apiResponse) {
     summary.totalFilesChanged = files.length;
   if (!summary.overallGrade && summary.prScore)
     summary.overallGrade = ""; // filled in UI with gradeFromScore if empty
+
+  if (!summary.linesAdded || !summary.linesDeleted) {
+    const totals = aggregateFileStats(files);
+    if (!summary.linesAdded) summary.linesAdded = totals.additions;
+    if (!summary.linesDeleted) summary.linesDeleted = totals.deletions;
+  }
+
+  const sevCounts = aggregateSeverityCounts(issues);
+  if (!summary.highRiskFindings)
+    summary.highRiskFindings = sevCounts.critical + sevCounts.high;
+  if (!summary.mediumFindings) summary.mediumFindings = sevCounts.medium;
+  if (!summary.lowFindings)
+    summary.lowFindings = sevCounts.low + sevCounts.info;
+
+  summary.riskLevel = pickStr(raw, ["riskLevel", "overallRiskLevel"], "");
+  summary.finalDecision = pickStr(raw, ["finalDecision", "decision", "verdict"], "");
+  summary.complete = pick(raw, ["complete", "isComplete"]);
+  summary.metadata = pick(raw, ["metadata"]);
 
   const charts = {
     issuePie: buildIssuePie(issueDistributionObj, issues),

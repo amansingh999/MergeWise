@@ -4,9 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../constants/storage";
 
 const defaultSettings = {
-  theme: "dark",
+  theme: "system",
   animations: true,
-  chartDensity: "comfortable",
   exportDefault: "json",
   highContrast: false,
 };

@@ -6,8 +6,13 @@ const client = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+/** POST { prUrl } → review payload from MergeWise API */
 export async function analyzePullRequest(prUrl) {
-  const { data } = await client.post(ANALYZE_PR_ENDPOINT, { prUrl });
+  const trimmed = String(prUrl || "").trim();
+  if (!trimmed) {
+    throw new Error("Pull request URL is required.");
+  }
+  const { data } = await client.post(ANALYZE_PR_ENDPOINT, { prUrl: trimmed });
   return data;
 }
 

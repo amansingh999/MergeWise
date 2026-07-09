@@ -26,7 +26,6 @@ export default function AnalyzeLoader({ progress = 0 }) {
         aria-busy="true"
       >
         <div className={styles.panel}>
-          <div className={styles.orb} aria-hidden />
           <p className={styles.title}>{STEPS[idx]}</p>
           <div className={styles.bar} aria-hidden>
             <motion.div

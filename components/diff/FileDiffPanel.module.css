@@ -37,17 +37,127 @@
   gap: 0.65rem;
 }
 
-.steps {
+.viewTabs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  align-items: center;
-  color: #94a3b8;
-  font-size: 0.78rem;
 }
 
-.arrow {
-  color: #818cf8;
+.tab,
+.tabActive {
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(17, 24, 39, 0.65);
+  color: #94a3b8;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.tabActive {
+  color: #e5e7eb;
+  border-color: rgba(129, 140, 248, 0.45);
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.lineGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+@media (max-width: 900px) {
+  .lineGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lineCol {
+  min-width: 0;
+  border-right: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.lineCol:last-child {
+  border-right: 0;
+}
+
+.lineColHead {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: #cbd5e1;
+  background: rgba(2, 6, 23, 0.45);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.lineCount {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.linePre {
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  max-height: min(480px, 55vh);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.fs .linePre {
+  max-height: none;
+}
+
+.lineAdded,
+.lineRemoved {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.lineAdded {
+  background: rgba(16, 185, 129, 0.12);
+  color: #a7f3d0;
+}
+
+.lineRemoved {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+.linePrefix {
+  flex-shrink: 0;
+  width: 1ch;
+  font-weight: 700;
+  user-select: none;
+}
+
+.lineEmpty {
+  padding: 1rem 0.75rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.patchPre {
+  margin: 0;
+  padding: 0.85rem;
+  overflow: auto;
+  max-height: min(560px, 62vh);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #cbd5e1;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.fs .patchPre {
+  max-height: none;
+  flex: 1;
 }
 
 .actions {
